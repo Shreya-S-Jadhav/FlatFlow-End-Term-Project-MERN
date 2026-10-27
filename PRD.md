@@ -14,8 +14,8 @@
 | **Phase 1** | Project Scaffolding & Foundation | **Completed** |
 | **Phase 2** | Authentication & Role-Based Authorization | **Completed** |
 | **Phase 3** | Flat Management & Maintenance Billing | **Completed** |
-| **Phase 4** | Payment Gateway Integration (Razorpay Test Mode) & Receipts | **In Progress** |
-| **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | Planned |
+| **Phase 4** | Payment Gateway Integration & Receipts | **Completed** |
+| **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | **In Progress** |
 | **Phase 6** | Society Financial Analytics & Deployment Prep | Planned |
 
 ---
@@ -36,9 +36,9 @@
 | Bill Generation & Uniqueness Guard | Billing | **Completed** | Compound index `{ flat: 1, billingPeriod: 1 }` prevents duplicates |
 | Bulk Monthly Bill Generation | Billing | **Completed** | 1-click batch generation with safe skip of existing bills |
 | Resident My-Bills & Search/Filters | Billing | **Completed** | Filter tabs (Unpaid, Overdue, Paid), strict flat data isolation |
-| Razorpay Test Mode Order & Verification | Payments | **In Progress** | Server-side signature validation |
-| Payment Receipts & History | Payments | Planned | Tamper-proof verified payment records |
-| Dispute Lifecycle & Document Evidence | Disputes | Planned | Open -> Under Review -> Resolved |
+| Payment Gateway Order & Server Verification | Payments | **Completed** | Trusted server amount lookup, HMAC SHA256 validation |
+| Payment History & Printable Receipts | Payments | **Completed** | Printable official receipt (`/receipt/:id`) with verified audit stamp |
+| Dispute Lifecycle & Document Evidence | Disputes | **In Progress** | Open -> Under Review -> Resolved |
 | In-App Notifications | Notifications | Planned | Due-date and bill alerts |
 | Admin Dashboard Analytics | Reporting | Planned | Verified collections vs pending vs overdue |
 
@@ -55,3 +55,4 @@
 | 3 | `feat: scaffold React frontend with Vite, Axios client, and health check integration` | Setup React + Vite, Axios with credentials, basic responsive layout |
 | 4 | `feat: implement authentication, role-based authorization, flat and resident management` | User/Flat models, JWT HttpOnly cookies, auth middleware, AuthContext, ProtectedRoute |
 | 5 | `feat: implement maintenance billing module with batch generation, filters, and resident views` | Bill schema, unique period guard, batch/single bill generation, status filters |
+| 6 | `feat: implement payment processing, server-side verification, payment history, and printable receipts` | Payment schema, order creation, HMAC signature verification, PaymentModal, receipt page |

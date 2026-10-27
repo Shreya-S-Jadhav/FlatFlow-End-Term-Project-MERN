@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import PaymentModal from '../components/PaymentModal';
 
 const ResidentBillsPage = () => {
   const { user } = useAuth();
@@ -8,6 +9,7 @@ const ResidentBillsPage = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [payingBill, setPayingBill] = useState(null);
 
   const fetchMyBills = async () => {
     try {
@@ -140,7 +142,7 @@ const ResidentBillsPage = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={() => alert(`Ready for Phase 4 Payments! Will launch Razorpay for ${bill.billNumber} (₹${bill.totalAmount})`)}
+                    onClick={() => setPayingBill(bill)}
                     style={{
                       padding: '0.5rem 1rem',
                       backgroundColor: '#2563eb',
@@ -158,6 +160,18 @@ const ResidentBillsPage = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Payment Checkout Modal */}
+      {payingBill && (
+        <PaymentModal
+          bill={payingBill}
+          onClose={() => setPayingBill(null)}
+          onPaymentSuccess={() => {
+            fetchMyBills();
+            setPayingBill(null);
+          }}
+        />
       )}
     </div>
   );

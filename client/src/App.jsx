@@ -9,6 +9,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminFlatsPage from './pages/AdminFlatsPage';
 import AdminResidentsPage from './pages/AdminResidentsPage';
 import AdminBillsPage from './pages/AdminBillsPage';
+import PaymentHistoryPage from './pages/PaymentHistoryPage';
+import ReceiptPage from './pages/ReceiptPage';
 
 // Root index redirector
 const RootRedirect = () => {
@@ -34,6 +36,12 @@ function App() {
               <Route element={<ProtectedRoute allowedRoles={['resident']} />}>
                 <Route path="/dashboard" element={<ResidentDashboard />} />
                 <Route path="/my-bills" element={<ResidentBillsPage />} />
+                <Route path="/payment-history" element={<PaymentHistoryPage />} />
+              </Route>
+
+              {/* Authenticated Routes (Admin or Resident of that flat) */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/receipt/:id" element={<ReceiptPage />} />
               </Route>
 
               {/* Admin Only Protected Routes */}
