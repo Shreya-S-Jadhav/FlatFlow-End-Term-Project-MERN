@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { formatDate } from '../utils/dateFormatter';
 
@@ -350,6 +351,7 @@ const AdminBillsPage = () => {
                   <th style={{ padding: '0.5rem' }}>Due Date</th>
                   <th style={{ padding: '0.5rem' }}>Total Amount</th>
                   <th style={{ padding: '0.5rem' }}>Status</th>
+                  <th style={{ padding: '0.5rem', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -374,6 +376,23 @@ const AdminBillsPage = () => {
                       >
                         {b.status}
                       </span>
+                    </td>
+                    <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+                      <Link
+                        to={`/bill/${b._id}/print`}
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.3rem 0.6rem',
+                          background: '#e5e7eb',
+                          borderRadius: '4px',
+                          color: '#1f2937',
+                          fontSize: '0.8rem',
+                          fontWeight: '600',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        🖨️ Print Bill
+                      </Link>
                     </td>
                   </tr>
                 ))}

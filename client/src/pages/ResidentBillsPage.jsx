@@ -56,25 +56,60 @@ const ResidentBillsPage = () => {
         </div>
 
         {/* Status Filter Tabs */}
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {['all', 'unpaid', 'overdue', 'paid'].map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilterStatus(s)}
-              style={{
-                padding: '0.4rem 0.8rem',
-                borderRadius: '4px',
-                border: '1px solid #d1d5db',
-                background: filterStatus === s ? '#2563eb' : '#ffffff',
-                color: filterStatus === s ? '#ffffff' : '#374151',
-                fontWeight: filterStatus === s ? '600' : 'normal',
-                textTransform: 'capitalize',
-                fontSize: '0.85rem',
-              }}
-            >
-              {s}
-            </button>
-          ))}
+        <div style={{
+          display: 'flex',
+          gap: '0.4rem',
+          background: '#f8fafc',
+          padding: '0.35rem',
+          borderRadius: '10px',
+          border: '1px solid #e2e8f0',
+        }}>
+          {[
+            { key: 'all', label: 'All', icon: '📋', activeBg: '#2563eb', activeBorder: '#1d4ed8' },
+            { key: 'unpaid', label: 'Unpaid', icon: '⏳', activeBg: '#f59e0b', activeBorder: '#d97706' },
+            { key: 'overdue', label: 'Overdue', icon: '🔴', activeBg: '#ef4444', activeBorder: '#dc2626' },
+            { key: 'paid', label: 'Paid', icon: '✅', activeBg: '#10b981', activeBorder: '#059669' },
+          ].map((tab) => {
+            const active = filterStatus === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setFilterStatus(tab.key)}
+                style={{
+                  padding: '0.45rem 0.95rem',
+                  borderRadius: '8px',
+                  border: active ? `1.5px solid ${tab.activeBorder}` : '1px solid #d1d5db',
+                  background: active ? tab.activeBg : '#ffffff',
+                  color: active ? '#ffffff' : '#374151',
+                  fontWeight: active ? '600' : '500',
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  boxShadow: active ? '0 2px 6px rgba(0,0,0,0.16)' : '0 1px 2px rgba(0,0,0,0.05)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.background = '#f3f4f6';
+                    e.currentTarget.style.borderColor = '#9ca3af';
+                    e.currentTarget.style.color = '#111827';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.background = '#ffffff';
+                    e.currentTarget.style.borderColor = '#d1d5db';
+                    e.currentTarget.style.color = '#374151';
+                  }
+                }}
+              >
+                <span style={{ fontSize: '0.85rem' }}>{tab.icon}</span>
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

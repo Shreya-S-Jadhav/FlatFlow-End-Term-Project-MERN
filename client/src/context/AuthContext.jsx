@@ -45,6 +45,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (userData) => {
+    setError(null);
+    try {
+      const res = await api.post('/auth/register', userData);
+      if (res.data?.success) {
+        setUser(res.data.user);
+        return { success: true, user: res.data.user };
+      }
+      return { success: false, message: 'Registration failed.' };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Registration failed. Please check details.';
+      setError(message);
+      return { success: false, message };
+    }
+  };
+
   const logout = async () => {
     try {
       await api.post('/auth/logout');
@@ -62,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         login,
+        register,
         logout,
         checkAuth,
         isAdmin: user?.role === 'admin',

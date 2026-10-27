@@ -13,6 +13,7 @@ import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import ReceiptPage from './pages/ReceiptPage';
 import ResidentDisputesPage from './pages/ResidentDisputesPage';
 import AdminDisputesPage from './pages/AdminDisputesPage';
+import BillPrintPage from './pages/BillPrintPage';
 
 // Root index redirector
 const RootRedirect = () => {
@@ -32,6 +33,7 @@ function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<LoginPage initialMode="register" />} />
               <Route path="/" element={<RootRedirect />} />
 
               {/* Resident Only Protected Routes */}
@@ -45,6 +47,7 @@ function App() {
               {/* Authenticated Routes (Admin or Resident of that flat) */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/receipt/:id" element={<ReceiptPage />} />
+                <Route path="/bill/:id/print" element={<BillPrintPage />} />
               </Route>
 
               {/* Admin Only Protected Routes */}
