@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 
@@ -27,13 +29,9 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Future API routes will be mounted here:
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
-// app.use('/api/flats', flatRoutes);
-// app.use('/api/bills', billRoutes);
-// app.use('/api/payments', paymentRoutes);
-// app.use('/api/disputes', disputeRoutes);
+// Mount Feature API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error Handling Middleware
 app.use(notFoundHandler);

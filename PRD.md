@@ -12,8 +12,8 @@
 | Phase | Description | Status |
 |---|---|---|
 | **Phase 1** | Project Scaffolding & Foundation | **Completed** |
-| **Phase 2** | Authentication & Role-Based Authorization | **In Progress** |
-| **Phase 3** | Flat Management & Maintenance Billing | Planned |
+| **Phase 2** | Authentication & Role-Based Authorization | **Completed** |
+| **Phase 3** | Flat Management & Maintenance Billing | **In Progress** |
 | **Phase 4** | Payment Gateway Integration (Razorpay Test Mode) & Receipts | Planned |
 | **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | Planned |
 | **Phase 6** | Society Financial Analytics & Deployment Prep | Planned |
@@ -29,9 +29,11 @@
 | Backend Scaffolding (`server/`) | Foundation | **Completed** | Express, CORS, cookie-parser, error middleware, health route |
 | Frontend Scaffolding (`client/`) | Foundation | **Completed** | React + Vite, react-router-dom, Axios with credentials |
 | MongoDB Atlas Connection | Database | **Completed** | Live connection verified with Atlas cluster |
-| User & Flat Data Models | Auth & Data | **In Progress** | Role enforcement: `resident` and `admin` |
-| JWT Authentication in HttpOnly Cookie | Security | Planned | Login, logout, session check |
-| Bill Generation & Uniqueness Guard | Billing | Planned | Prevent duplicate periods per flat |
+| User & Flat Data Models | Auth & Data | **Completed** | User (bcrypt hash, role guard) & Flat (unique per wing) |
+| JWT Authentication in HttpOnly Cookie | Security | **Completed** | `protect` & `adminOnly` middleware, secure cookie, session restore |
+| Resident & Flat Management | Auth & Admin | **Completed** | Admin can create flats and assign resident accounts |
+| Protected React Routes & AuthContext | Frontend Auth | **Completed** | Role-based route guards (`/admin/*`, `/dashboard`) |
+| Bill Generation & Uniqueness Guard | Billing | **In Progress** | Prevent duplicate periods per flat |
 | Resident My-Bills & Search/Filters | Billing | Planned | Status: Unpaid, Overdue, Paid |
 | Razorpay Test Mode Order & Verification | Payments | Planned | Server-side signature validation |
 | Payment Receipts & History | Payments | Planned | Tamper-proof verified payment records |
@@ -50,3 +52,4 @@
 | 1 | `chore: initial project repository and PRD setup` | Initialized git, added strict `.gitignore`, created living PRD |
 | 2 | `feat: scaffold Express backend with modular architecture and health check` | Setup Express server, ES modules, error handlers, and config |
 | 3 | `feat: scaffold React frontend with Vite, Axios client, and health check integration` | Setup React + Vite, Axios with credentials, basic responsive layout |
+| 4 | `feat: implement authentication, role-based authorization, flat and resident management` | User/Flat models, JWT HttpOnly cookies, auth middleware, AuthContext, ProtectedRoute |
