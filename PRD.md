@@ -1,0 +1,50 @@
+# FlatFlow — Product Requirements Document (PRD) & Execution Log
+
+**Domain:** Housing Society Maintenance Management & Payments  
+**Target:** Single Housing Society  
+**Submission Deadline:** 27 October 2026, 9:00 PM IST  
+**Stack:** MongoDB, Express.js, React.js, Node.js (MERN)
+
+---
+
+## 1. Project Status Summary
+
+| Phase | Description | Status |
+|---|---|---|
+| **Phase 1** | Project Scaffolding & Foundation | **In Progress** |
+| **Phase 2** | Authentication & Role-Based Authorization | Planned |
+| **Phase 3** | Flat Management & Maintenance Billing | Planned |
+| **Phase 4** | Payment Gateway Integration (Razorpay Test Mode) & Receipts | Planned |
+| **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | Planned |
+| **Phase 6** | Society Financial Analytics & Deployment Prep | Planned |
+
+---
+
+## 2. Feature Tracking Matrix
+
+| Feature | Category | State | Notes |
+|---|---|---|---|
+| Environment Verification | Foundation | **Completed** | Node v24.12.0, npm 11.6.2, Git 2.51.0 confirmed |
+| Git Setup & Safe `.gitignore` | Foundation | **In Progress** | Repository initialized with secret shielding |
+| Backend Scaffolding (`server/`) | Foundation | Planned | Express, cors, dotenv, mongoose |
+| Frontend Scaffolding (`client/`) | Foundation | Planned | React + Vite, react-router-dom |
+| MongoDB Atlas / Local Connection | Database | Planned | Environment variable configuration |
+| User & Flat Data Models | Auth & Data | Planned | Role enforcement: `resident` and `admin` |
+| JWT Authentication in HttpOnly Cookie | Security | Planned | Login, logout, session check |
+| Bill Generation & Uniqueness Guard | Billing | Planned | Prevent duplicate periods per flat |
+| Resident My-Bills & Search/Filters | Billing | Planned | Status: Unpaid, Overdue, Paid |
+| Razorpay Test Mode Order & Verification | Payments | Planned | Server-side signature validation |
+| Payment Receipts & History | Payments | Planned | Tamper-proof verified payment records |
+| Dispute Lifecycle & Document Evidence | Disputes | Planned | Open -> Under Review -> Resolved |
+| In-App Notifications | Notifications | Planned | Due-date and bill alerts |
+| Admin Dashboard Analytics | Reporting | Planned | Verified collections vs pending vs overdue |
+
+*States: Planned | In Progress | Implemented | Tested | Deployed*
+
+---
+
+## 3. Git Commit Log
+
+| # | Commit Message | Description |
+|---|---|---|
+| 1 | `chore: initial project repository and PRD setup` | Initialized git, added strict `.gitignore`, created living PRD |
