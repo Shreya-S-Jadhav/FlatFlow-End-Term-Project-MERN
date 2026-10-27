@@ -1,4 +1,10 @@
-/* Basic functional styling - palette will be customized later */
+/* ============================================
+   FlatFlow Design System
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* --- Reset & Base --- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,10 +12,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
   color: #1f2937;
-  background-color: #f9fafb;
+  background-color: #f0f2f5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -22,26 +30,41 @@ button {
   font-family: inherit;
 }
 
+/* --- Layout --- */
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;
 }
 
+/* --- Card System --- */
 .card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.analytics-card {
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+/* --- Badge System --- */
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .badge-success {
@@ -57,4 +80,633 @@ button {
 .badge-danger {
   background-color: #fee2e2;
   color: #991b1b;
+}
+
+.badge-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* ============================================
+   Dashboard Header
+   ============================================ */
+.dashboard-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #7c3aed 100%);
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+}
+
+.dashboard-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-subtitle {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.dashboard-date {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.flat-badge-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+}
+
+.flat-badge-label {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flat-badge-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================
+   KPI Cards Grid
+   ============================================ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-blue { border-left-color: #2563eb; }
+.kpi-green { border-left-color: #059669; }
+.kpi-purple { border-left-color: #7c3aed; }
+.kpi-amber { border-left-color: #f59e0b; }
+.kpi-red { border-left-color: #dc2626; }
+
+.kpi-icon {
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #f3f4f6;
+  flex-shrink: 0;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.kpi-label {
+  font-size: 0.82rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================
+   Card Section Title
+   ============================================ */
+.card-section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+/* ============================================
+   Financial Summary
+   ============================================ */
+.financial-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.financial-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.financial-item:last-child {
+  border-bottom: none;
+}
+
+.financial-label {
+  font-size: 0.88rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.financial-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.financial-percent {
+  font-size: 0.82rem;
+  color: #6b7280;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+.progress-bar-container {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  margin: 0 0.75rem;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+/* ============================================
+   Bill Status Breakdown
+   ============================================ */
+.status-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.status-row {
+  display: grid;
+  grid-template-columns: 12px 70px 40px 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-name {
+  font-size: 0.88rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.status-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: right;
+}
+
+.status-bar-container {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.status-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+/* ============================================
+   Chart (Bar Chart)
+   ============================================ */
+.chart-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 1rem 0;
+  min-height: 240px;
+  gap: 0.5rem;
+}
+
+.chart-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 60px;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.chart-bar {
+  width: 24px;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  position: relative;
+  transition: height 0.8s ease;
+}
+
+.chart-bar-billed {
+  background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
+}
+
+.chart-bar-collected {
+  background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+}
+
+.chart-bar-label {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: #6b7280;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.chart-period-label {
+  font-size: 0.72rem;
+  color: #4b5563;
+  font-weight: 600;
+  text-align: center;
+}
+
+.chart-bill-count {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  margin-top: 0.15rem;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* ============================================
+   Defaulter List
+   ============================================ */
+.defaulter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.defaulter-row {
+  display: grid;
+  grid-template-columns: 30px 1fr 80px 100px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.5rem;
+  border-radius: 8px;
+  background: #fef2f2;
+  transition: background 0.2s;
+}
+
+.defaulter-row:hover {
+  background: #fee2e2;
+}
+
+.defaulter-rank {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.defaulter-flat {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.defaulter-count {
+  font-size: 0.82rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.defaulter-amount {
+  font-weight: 700;
+  color: #dc2626;
+  text-align: right;
+  font-size: 0.92rem;
+}
+
+/* ============================================
+   Dispute Stats
+   ============================================ */
+.dispute-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.dispute-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.dispute-stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dispute-stat-label {
+  font-size: 0.78rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 0.2rem;
+}
+
+/* ============================================
+   Analytics Table
+   ============================================ */
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.analytics-table thead {
+  background: #f9fafb;
+}
+
+.analytics-table th {
+  text-align: left;
+  padding: 0.7rem 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.analytics-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+.analytics-table tbody tr {
+  transition: background 0.15s;
+}
+
+.analytics-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* ============================================
+   Quick Links
+   ============================================ */
+.quick-links {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.quick-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quick-link-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.quick-link-blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.quick-link-green {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.quick-link-purple {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.quick-link-amber {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.link-btn {
+  display: inline-block;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: color 0.15s;
+}
+
+.link-btn:hover {
+  color: #1d4ed8;
+}
+
+/* ============================================
+   Flat Details (Resident Dashboard)
+   ============================================ */
+.flat-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.flat-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.flat-detail-row:last-child {
+  border-bottom: none;
+}
+
+.flat-detail-label {
+  font-size: 0.88rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.flat-detail-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ============================================
+   Loading Spinner
+   ============================================ */
+.analytics-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-value {
+    font-size: 1.3rem;
+  }
+
+  .chart-container {
+    min-height: 200px;
+  }
+
+  .chart-bar {
+    width: 18px;
+  }
+
+  .status-row {
+    grid-template-columns: 10px 60px 30px 1fr;
+    font-size: 0.82rem;
+  }
+
+  .quick-links {
+    flex-direction: column;
+  }
+
+  .quick-link-btn {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-title {
+    font-size: 1.15rem;
+  }
 }

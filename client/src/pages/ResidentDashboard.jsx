@@ -1,72 +1,153 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 const ResidentDashboard = () => {
   const { user } = useAuth();
   const flat = user?.flat;
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const res = await api.get('/analytics/my-summary');
+        setSummary(res.data.summary);
+      } catch (err) {
+        console.error('Failed to load summary:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSummary();
+  }, []);
 
   return (
     <div className="container" style={{ marginTop: '1.5rem' }}>
-      <div className="card" style={{ borderLeft: '4px solid #2563eb' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-          Welcome back, {user?.name}!
-        </h1>
-        <p style={{ color: '#4b5563', fontSize: '0.95rem' }}>
-          Resident Portal — Maintenance & Billing Management
-        </p>
+      {/* Welcome Header */}
+      <div className="dashboard-header">
+        <div>
+          <h1 className="dashboard-title">Welcome back, {user?.name}!</h1>
+          <p className="dashboard-subtitle">
+            Resident Portal — Maintenance & Billing Management
+          </p>
+        </div>
+        {flat && (
+          <div className="flat-badge-display">
+            <span className="flat-badge-label">Your Flat</span>
+            <span className="flat-badge-value">{flat.wing}-{flat.flatNumber}</span>
+          </div>
+        )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-        {/* Associated Flat Details Card */}
-        <div className="card">
-          <h2 style={{ fontSize: '1.15rem', fontWeight: '600', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>
-            My Flat Association
-          </h2>
+      {/* Summary KPI Cards */}
+      {summary && (
+        <div className="kpi-grid">
+          <div className="kpi-card kpi-blue">
+            <div className="kpi-icon">📄</div>
+            <div className="kpi-content">
+              <span className="kpi-value">{summary.totalBills}</span>
+              <span className="kpi-label">Total Bills</span>
+            </div>
+          </div>
+          <div className="kpi-card kpi-green">
+            <div className="kpi-icon">✅</div>
+            <div className="kpi-content">
+              <span className="kpi-value">{summary.paidBills}</span>
+              <span className="kpi-label">Paid</span>
+            </div>
+          </div>
+          <div className="kpi-card kpi-amber">
+            <div className="kpi-icon">⏳</div>
+            <div className="kpi-content">
+              <span className="kpi-value">{summary.unpaidBills}</span>
+              <span className="kpi-label">Unpaid</span>
+            </div>
+          </div>
+          <div className="kpi-card kpi-red">
+            <div className="kpi-icon">🚨</div>
+            <div className="kpi-content">
+              <span className="kpi-value">{summary.overdueBills}</span>
+              <span className="kpi-label">Overdue</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        {/* Financial Summary Card */}
+        {summary && (
+          <div className="card analytics-card">
+            <h2 className="card-section-title">💰 My Financial Summary</h2>
+            <div className="financial-grid">
+              <div className="financial-item">
+                <span className="financial-label">Total Billed</span>
+                <span className="financial-value" style={{ color: '#1f2937' }}>
+                  ₹{summary.totalBilled.toLocaleString('en-IN')}
+                </span>
+              </div>
+              <div className="financial-item">
+                <span className="financial-label">Total Paid</span>
+                <span className="financial-value" style={{ color: '#059669' }}>
+                  ₹{summary.totalPaid.toLocaleString('en-IN')}
+                </span>
+              </div>
+              <div className="financial-item">
+                <span className="financial-label">Outstanding Balance</span>
+                <span className="financial-value" style={{ color: summary.totalOutstanding > 0 ? '#dc2626' : '#059669' }}>
+                  ₹{summary.totalOutstanding.toLocaleString('en-IN')}
+                </span>
+              </div>
+              {summary.activeDisputes > 0 && (
+                <div className="financial-item">
+                  <span className="financial-label">Active Disputes</span>
+                  <span className="financial-value" style={{ color: '#f59e0b' }}>
+                    {summary.activeDisputes}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Flat Details Card */}
+        <div className="card analytics-card">
+          <h2 className="card-section-title">🏠 My Flat Details</h2>
           {flat ? (
-            <div>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Flat Identifier:</strong> Wing {flat.wing} - Flat {flat.flatNumber}
-              </p>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Floor:</strong> Floor {flat.floor}
-              </p>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Base Monthly Maintenance:</strong> ₹{flat.maintenanceBaseAmount}
-              </p>
-              <p style={{ marginBottom: '0.5rem' }}>
-                <strong>Occupancy Status:</strong>{' '}
-                <span className="badge badge-success">{flat.status}</span>
-              </p>
+            <div className="flat-details">
+              <div className="flat-detail-row">
+                <span className="flat-detail-label">Flat</span>
+                <span className="flat-detail-value">Wing {flat.wing} - Flat {flat.flatNumber}</span>
+              </div>
+              <div className="flat-detail-row">
+                <span className="flat-detail-label">Floor</span>
+                <span className="flat-detail-value">Floor {flat.floor}</span>
+              </div>
+              <div className="flat-detail-row">
+                <span className="flat-detail-label">Base Maintenance</span>
+                <span className="flat-detail-value">₹{flat.maintenanceBaseAmount?.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flat-detail-row">
+                <span className="flat-detail-label">Status</span>
+                <span className="badge badge-success">{flat.status || 'Active'}</span>
+              </div>
             </div>
           ) : (
-            <p style={{ color: '#dc2626' }}>No flat currently associated. Please contact society administration.</p>
+            <p style={{ color: '#dc2626' }}>
+              No flat currently associated. Please contact society administration.
+            </p>
           )}
         </div>
+      </div>
 
-        {/* Quick Actions Card */}
-        <div className="card">
-          <h2 style={{ fontSize: '1.15rem', fontWeight: '600', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>
-            Maintenance & Payments
-          </h2>
-          <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            View your issued society maintenance bills, check due dates, and track payment receipts.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <Link
-              to="/my-bills"
-              style={{
-                display: 'block',
-                textAlign: 'center',
-                padding: '0.6rem',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
-                borderRadius: '4px',
-                fontWeight: '600',
-              }}
-            >
-              View My Bills & Pay
-            </Link>
-          </div>
+      {/* Quick Actions */}
+      <div className="card analytics-card">
+        <h2 className="card-section-title">🔗 Quick Actions</h2>
+        <div className="quick-links">
+          <Link to="/my-bills" className="quick-link-btn quick-link-blue">📄 View My Bills & Pay</Link>
+          <Link to="/payment-history" className="quick-link-btn quick-link-green">🧾 Payment History</Link>
+          <Link to="/disputes" className="quick-link-btn quick-link-amber">⚖️ My Disputes</Link>
         </div>
       </div>
     </div>

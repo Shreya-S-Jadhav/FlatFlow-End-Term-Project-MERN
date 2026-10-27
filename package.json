@@ -1,0 +1,22 @@
+{
+  "name": "flatflow-root",
+  "version": "1.0.0",
+  "description": "FlatFlow - Society Maintenance Management & Payment Platform",
+  "scripts": {
+    "start": "npm start --prefix server",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client",
+    "seed": "npm run seed --prefix server",
+    "install:all": "npm install --prefix server && npm install --prefix client"
+  },
+  "keywords": [
+    "flatflow",
+    "mern",
+    "housing-society",
+    "billing",
+    "payments"
+  ],
+  "author": "Shreya Jadhav",
+  "license": "ISC"
+}

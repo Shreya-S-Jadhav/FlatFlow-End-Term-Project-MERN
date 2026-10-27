@@ -16,7 +16,7 @@
 | **Phase 3** | Flat Management & Maintenance Billing | **Completed** |
 | **Phase 4** | Payment Gateway Integration & Receipts | **Completed** |
 | **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | **Completed** |
-| **Phase 6** | Society Financial Analytics & Deployment Prep | **In Progress** |
+| **Phase 6** | Society Financial Analytics & Deployment Prep | **Completed** |
 
 ---
 
@@ -40,7 +40,9 @@
 | Payment History & Printable Receipts | Payments | **Completed** | Printable official receipt (`/receipt/:id`) with verified audit stamp |
 | Dispute Lifecycle & Document Evidence | Disputes | **Completed** | Open -> Under Review -> Resolved, private evidence upload |
 | In-App Notifications | Notifications | **Completed** | Real-time unread bell badge, alerts on disputes & payments |
-| Admin Dashboard Analytics | Reporting | **In Progress** | Verified collections vs pending vs overdue |
+| Admin Dashboard Analytics | Reporting | **Completed** | Verified collections vs pending vs overdue, 6-month trends, defaulter list |
+| Resident Financial Summary | Reporting | **Completed** | Personal KPI cards (total, paid, outstanding, disputes) |
+| Deployment Preparation & Production Build | DevOps | **Completed** | Vite production bundle, Express static serving, root package.json |
 
 *States: Planned | In Progress | Implemented | Tested | Deployed*
 
@@ -57,3 +59,4 @@
 | 5 | `feat: implement maintenance billing module with batch generation, filters, and resident views` | Bill schema, unique period guard, batch/single bill generation, status filters |
 | 6 | `feat: implement payment processing, server-side verification, payment history, and printable receipts` | Payment schema, order creation, HMAC signature verification, PaymentModal, receipt page |
 | 7 | `feat: implement billing disputes, private evidence uploads, and in-app notifications` | Dispute lifecycle, Multer private document streaming, Notification bell & alert tracking |
+| 8 | `feat: implement society financial analytics, resident summary, and production deployment readiness` | Admin analytics dashboard, 6-month billing trend chart, top defaulters, resident KPIs, static client serving, and root scripts |

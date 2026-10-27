@@ -1,3 +1,5 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -8,6 +10,10 @@ import billRoutes from './routes/billRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import disputeRoutes from './routes/disputeRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -15,6 +21,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
@@ -22,8 +30,8 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, postman) or matching origins
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin, configured allowed origins, or any localhost port in development
+      if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
         return callback(null, true);
       }
       return callback(new Error('Blocked by CORS policy'));
@@ -53,6 +61,20 @@ app.use('/api/bills', billRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/disputes', disputeRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/analytics', analyticsRoutes);
+
+// Serve client build in production
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.resolve(__dirname, '../../client/dist');
+  app.use(express.static(clientDistPath));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.resolve(clientDistPath, 'index.html'));
+  });
+}
 
 // Error Handling Middleware
 app.use(notFoundHandler);
