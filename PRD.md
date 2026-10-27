@@ -25,10 +25,10 @@
 | Feature | Category | State | Notes |
 |---|---|---|---|
 | Environment Verification | Foundation | **Completed** | Node v24.12.0, npm 11.6.2, Git 2.51.0 confirmed |
-| Git Setup & Safe `.gitignore` | Foundation | **In Progress** | Repository initialized with secret shielding |
-| Backend Scaffolding (`server/`) | Foundation | Planned | Express, cors, dotenv, mongoose |
+| Git Setup & Safe `.gitignore` | Foundation | **Completed** | Repository connected to GitHub (`main`) |
+| Backend Scaffolding (`server/`) | Foundation | **Implemented** | Express, CORS, cookie-parser, error middleware, health route |
 | Frontend Scaffolding (`client/`) | Foundation | Planned | React + Vite, react-router-dom |
-| MongoDB Atlas / Local Connection | Database | Planned | Environment variable configuration |
+| MongoDB Atlas / Local Connection | Database | **In Progress** | Mongoose client configured with timeout guard |
 | User & Flat Data Models | Auth & Data | Planned | Role enforcement: `resident` and `admin` |
 | JWT Authentication in HttpOnly Cookie | Security | Planned | Login, logout, session check |
 | Bill Generation & Uniqueness Guard | Billing | Planned | Prevent duplicate periods per flat |
@@ -48,3 +48,4 @@
 | # | Commit Message | Description |
 |---|---|---|
 | 1 | `chore: initial project repository and PRD setup` | Initialized git, added strict `.gitignore`, created living PRD |
+| 2 | `feat: scaffold Express backend with modular architecture and health check` | Setup Express server, ES modules, error handlers, and config |
