@@ -333,7 +333,7 @@ export const runDailyDueDateReminderJob = async () => {
 // @access  Private (Admin only)
 export const sendDueDateReminders = async (req, res, next) => {
   try {
-    const { dueOnlyToday = false, force = false } = req.body || {};
+    const { dueOnlyToday = false, force = false, allUnpaid = true } = req.body || {};
 
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
@@ -345,7 +345,7 @@ export const sendDueDateReminders = async (req, res, next) => {
 
     if (dueOnlyToday) {
       filter.dueDate = { $gte: startOfDay, $lte: endOfDay };
-    } else {
+    } else if (!allUnpaid) {
       filter.dueDate = { $lte: endOfDay };
     }
 
@@ -353,6 +353,7 @@ export const sendDueDateReminders = async (req, res, next) => {
 
     let remindersSent = 0;
     const notifiedFlats = new Set();
+    const flatsWithoutResidents = new Set();
 
     for (const bill of unpaidBills) {
       if (!bill.flat) continue;
@@ -362,6 +363,11 @@ export const sendDueDateReminders = async (req, res, next) => {
         flat: bill.flat._id,
         status: 'active',
       });
+
+      if (residents.length === 0) {
+        flatsWithoutResidents.add(`${bill.flat.wing}-${bill.flat.flatNumber}`);
+        continue;
+      }
 
       for (const resident of residents) {
         if (!force) {
@@ -379,7 +385,9 @@ export const sendDueDateReminders = async (req, res, next) => {
         const isTodayDue = bill.dueDate >= startOfDay && bill.dueDate <= endOfDay;
         const dueText = isTodayDue
           ? 'Today is the final day to pay your maintenance bill'
-          : 'Your maintenance bill payment is overdue / pending';
+          : bill.status === 'overdue'
+          ? 'Your maintenance bill is overdue'
+          : 'Your maintenance bill payment is pending';
 
         await Notification.create({
           recipient: resident._id,
@@ -394,14 +402,25 @@ export const sendDueDateReminders = async (req, res, next) => {
       }
     }
 
+    let message = '';
+    if (remindersSent > 0) {
+      message = `Sent ${remindersSent} reminder notification(s) across ${notifiedFlats.size} flat(s) (${Array.from(notifiedFlats).join(', ')}).`;
+      if (flatsWithoutResidents.size > 0) {
+        message += ` Note: ${flatsWithoutResidents.size} flat(s) (${Array.from(flatsWithoutResidents).join(', ')}) do not have a resident account registered yet.`;
+      }
+    } else if (flatsWithoutResidents.size > 0) {
+      message = `No reminders sent. ${flatsWithoutResidents.size} flat(s) (${Array.from(flatsWithoutResidents).join(', ')}) have unpaid bills, but no resident accounts are registered for them yet.`;
+    } else {
+      message = 'Eligible residents have already received reminders today or have no unpaid bills.';
+    }
+
     return res.status(200).json({
       success: true,
-      message: remindersSent > 0
-        ? `Sent ${remindersSent} due reminder notification(s) across ${notifiedFlats.size} flat(s).`
-        : 'Eligible residents have already received reminders today or have no unpaid bills due.',
+      message,
       remindersSent,
       flatsCount: notifiedFlats.size,
       flats: Array.from(notifiedFlats),
+      flatsWithoutResidents: Array.from(flatsWithoutResidents),
     });
   } catch (error) {
     next(error);

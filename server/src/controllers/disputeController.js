@@ -124,19 +124,41 @@ export const getMyDisputes = async (req, res, next) => {
 // @access  Private (Admin only)
 export const getAdminDisputes = async (req, res, next) => {
   try {
-    const { status } = req.query;
+    const { status, priority, sortBy = 'newest' } = req.query;
     const query = {};
 
     if (status && status !== 'all') {
       query.status = status;
     }
 
-    const disputes = await Dispute.find(query)
+    if (priority && priority !== 'all') {
+      query.priority = priority.toLowerCase();
+    }
+
+    let disputes = await Dispute.find(query)
       .populate('bill')
       .populate('flat')
       .populate('resident', 'name email phone')
       .populate('resolvedBy', 'name')
       .sort({ createdAt: -1 });
+
+    const priorityWeight = { high: 3, medium: 2, low: 1 };
+
+    if (sortBy === 'priority_desc' || sortBy === 'priority_high') {
+      disputes.sort((a, b) => {
+        const weightDiff = (priorityWeight[b.priority] || 0) - (priorityWeight[a.priority] || 0);
+        if (weightDiff !== 0) return weightDiff;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === 'priority_asc' || sortBy === 'priority_low') {
+      disputes.sort((a, b) => {
+        const weightDiff = (priorityWeight[a.priority] || 0) - (priorityWeight[b.priority] || 0);
+        if (weightDiff !== 0) return weightDiff;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    } else if (sortBy === 'oldest') {
+      disputes.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
 
     return res.status(200).json({
       success: true,

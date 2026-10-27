@@ -47,12 +47,43 @@ export const createFlat = async (req, res, next) => {
   }
 };
 
-// @desc    Get all flats in society
+// @desc    Get all flats in society (supports search & status filtering)
 // @route   GET /api/admin/flats
 // @access  Private (Admin only)
 export const getFlats = async (req, res, next) => {
   try {
-    const flats = await Flat.find().sort({ wing: 1, flatNumber: 1 });
+    const { search, status, wing } = req.query;
+    const query = {};
+
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+
+    if (wing && wing !== 'all') {
+      query.wing = wing.toUpperCase().trim();
+    }
+
+    if (search && search.trim()) {
+      const regex = new RegExp(search.trim(), 'i');
+      const parts = search.trim().split(/[-\s]+/);
+      const orClauses = [
+        { flatNumber: regex },
+        { wing: regex },
+        { ownerName: regex },
+        { contactNumber: regex },
+      ];
+
+      if (parts.length >= 2) {
+        orClauses.push({
+          wing: new RegExp(parts[0], 'i'),
+          flatNumber: new RegExp(parts[1], 'i'),
+        });
+      }
+
+      query.$or = orClauses;
+    }
+
+    const flats = await Flat.find(query).sort({ wing: 1, flatNumber: 1 });
     return res.status(200).json({
       success: true,
       count: flats.length,
@@ -181,12 +212,47 @@ export const createResident = async (req, res, next) => {
   }
 };
 
-// @desc    Get all registered residents
+// @desc    Get all registered residents (supports search & status filtering)
 // @route   GET /api/admin/residents
 // @access  Private (Admin only)
 export const getResidents = async (req, res, next) => {
   try {
-    const residents = await User.find({ role: 'resident' })
+    const { search, status } = req.query;
+    const query = { role: 'resident' };
+
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+
+    if (search && search.trim()) {
+      const regex = new RegExp(search.trim(), 'i');
+
+      // Check if search matches any flats (wing, flatNumber, or wing-flatNumber combination)
+      const parts = search.trim().split(/[-\s]+/);
+      const flatOrClauses = [
+        { flatNumber: regex },
+        { wing: regex },
+      ];
+
+      if (parts.length >= 2) {
+        flatOrClauses.push({
+          wing: new RegExp(parts[0], 'i'),
+          flatNumber: new RegExp(parts[1], 'i'),
+        });
+      }
+
+      const matchingFlats = await Flat.find({ $or: flatOrClauses }).select('_id');
+      const flatIds = matchingFlats.map((f) => f._id);
+
+      query.$or = [
+        { name: regex },
+        { email: regex },
+        { phone: regex },
+        { flat: { $in: flatIds } },
+      ];
+    }
+
+    const residents = await User.find(query)
       .select('-password')
       .populate('flat')
       .sort({ createdAt: -1 });

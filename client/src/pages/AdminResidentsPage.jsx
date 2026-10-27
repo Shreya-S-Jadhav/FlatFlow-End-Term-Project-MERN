@@ -26,11 +26,15 @@ const AdminResidentsPage = () => {
   const [editPassword, setEditPassword] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
 
+  // Filters & Search
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
   const fetchData = async () => {
     try {
       setLoading(true);
       const [resResidents, resFlats] = await Promise.all([
-        api.get('/admin/residents'),
+        api.get(`/admin/residents?search=${encodeURIComponent(search)}&status=${statusFilter}`),
         api.get('/admin/flats'),
       ]);
       setResidents(resResidents.data?.residents || []);
@@ -47,7 +51,12 @@ const AdminResidentsPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [statusFilter]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchData();
+  };
 
   const handleOpenEdit = (resident) => {
     setEditingResident(resident);
@@ -213,9 +222,39 @@ const AdminResidentsPage = () => {
 
       {/* Resident Accounts Table */}
       <div className="card">
-        <h2 style={{ fontSize: '1.15rem', fontWeight: '600', marginBottom: '1rem' }}>
-          Registered Resident Accounts ({residents.length})
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: '600' }}>
+            Registered Resident Accounts ({residents.length})
+          </h2>
+
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.35rem' }}>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search Name, Email, Flat"
+                style={{ padding: '0.35rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
+              />
+              <button
+                type="submit"
+                style={{ padding: '0.35rem 0.75rem', background: '#374151', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                Search
+              </button>
+            </form>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ padding: '0.35rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
 
         {loading ? (
           <p>Loading resident accounts...</p>

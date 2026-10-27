@@ -111,7 +111,7 @@ const AdminBillsPage = () => {
     setSuccess('');
     setSendingReminders(true);
     try {
-      const res = await api.post('/bills/admin/send-due-reminders', { force: true });
+      const res = await api.post('/bills/admin/send-due-reminders', { force: true, allUnpaid: true });
       setSuccess(res.data.message || 'Due date reminder notifications dispatched successfully.');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send due date reminder notifications.');

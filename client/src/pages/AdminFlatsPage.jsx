@@ -27,10 +27,14 @@ const AdminFlatsPage = () => {
   const [editMaintenanceBaseAmount, setEditMaintenanceBaseAmount] = useState(2500);
   const [savingEdit, setSavingEdit] = useState(false);
 
+  // Filters & Search
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
   const fetchFlats = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/admin/flats');
+      const res = await api.get(`/admin/flats?search=${encodeURIComponent(search)}&status=${statusFilter}`);
       setFlats(res.data?.flats || []);
     } catch (err) {
       setError('Failed to fetch society flat directory.');
@@ -41,7 +45,12 @@ const AdminFlatsPage = () => {
 
   useEffect(() => {
     fetchFlats();
-  }, []);
+  }, [statusFilter]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchFlats();
+  };
 
   const handleOpenEdit = (flat) => {
     setEditingFlat(flat);
@@ -211,9 +220,39 @@ const AdminFlatsPage = () => {
 
       {/* Flats Table */}
       <div className="card">
-        <h2 style={{ fontSize: '1.15rem', fontWeight: '600', marginBottom: '1rem' }}>
-          Existing Society Flats ({flats.length})
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: '600' }}>
+            Existing Society Flats ({flats.length})
+          </h2>
+
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.35rem' }}>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search Flat # or Owner"
+                style={{ padding: '0.35rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
+              />
+              <button
+                type="submit"
+                style={{ padding: '0.35rem 0.75rem', background: '#374151', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                Search
+              </button>
+            </form>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ padding: '0.35rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
+            >
+              <option value="all">All Statuses</option>
+              <option value="occupied">Occupied</option>
+              <option value="vacant">Vacant</option>
+            </select>
+          </div>
+        </div>
 
         {loading ? (
           <p>Loading flats...</p>

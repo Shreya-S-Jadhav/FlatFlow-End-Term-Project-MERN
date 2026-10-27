@@ -5,6 +5,8 @@ const AdminDisputesPage = () => {
   const [disputes, setDisputes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -18,8 +20,12 @@ const AdminDisputesPage = () => {
     try {
       setLoading(true);
       setError('');
-      const queryParam = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
-      const res = await api.get(`/disputes/admin/all${queryParam}`);
+      const params = new URLSearchParams();
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (priorityFilter !== 'all') params.append('priority', priorityFilter);
+      if (sortBy) params.append('sortBy', sortBy);
+
+      const res = await api.get(`/disputes/admin/all?${params.toString()}`);
       setDisputes(res.data?.disputes || []);
     } catch (err) {
       setError('Failed to fetch society disputes.');
@@ -30,7 +36,11 @@ const AdminDisputesPage = () => {
 
   useEffect(() => {
     fetchDisputes();
-  }, [statusFilter]);
+  }, [statusFilter, priorityFilter, sortBy]);
+
+  const handleTogglePrioritySort = () => {
+    setSortBy((prev) => (prev === 'priority_desc' ? 'priority_asc' : 'priority_desc'));
+  };
 
   const handleOpenReview = (disp) => {
     setSelectedDispute(disp);
@@ -72,17 +82,41 @@ const AdminDisputesPage = () => {
           </p>
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: '0.4rem 0.6rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
-        >
-          <option value="all">All Disputes</option>
-          <option value="open">Open</option>
-          <option value="under_review">Under Review</option>
-          <option value="resolved">Resolved</option>
-          <option value="rejected">Rejected</option>
-        </select>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ padding: '0.4rem 0.6rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
+          >
+            <option value="all">All Disputes</option>
+            <option value="open">Open</option>
+            <option value="under_review">Under Review</option>
+            <option value="resolved">Resolved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            style={{ padding: '0.4rem 0.6rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem' }}
+          >
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{ padding: '0.4rem 0.6rem', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.85rem', fontWeight: '500' }}
+          >
+            <option value="newest">Sort: Newest First</option>
+            <option value="priority_desc">Sort: Priority (High → Low)</option>
+            <option value="priority_asc">Sort: Priority (Low → High)</option>
+            <option value="oldest">Sort: Oldest First</option>
+          </select>
+        </div>
       </div>
 
       {error && <div style={{ background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem' }}>{error}</div>}
@@ -200,7 +234,18 @@ const AdminDisputesPage = () => {
                   <th style={{ padding: '0.6rem' }}>Flat</th>
                   <th style={{ padding: '0.6rem' }}>Resident</th>
                   <th style={{ padding: '0.6rem' }}>Subject</th>
-                  <th style={{ padding: '0.6rem' }}>Priority</th>
+                  <th
+                    onClick={handleTogglePrioritySort}
+                    title="Click to toggle priority sorting"
+                    style={{
+                      padding: '0.6rem',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      color: sortBy.startsWith('priority') ? '#2563eb' : 'inherit',
+                    }}
+                  >
+                    Priority {sortBy === 'priority_desc' ? '▼' : sortBy === 'priority_asc' ? '▲' : '↕'}
+                  </th>
                   <th style={{ padding: '0.6rem' }}>Status</th>
                   <th style={{ padding: '0.6rem', textAlign: 'right' }}>Action</th>
                 </tr>
