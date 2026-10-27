@@ -63,6 +63,61 @@ export const getFlats = async (req, res, next) => {
   }
 };
 
+// @desc    Update an existing flat record
+// @route   PUT /api/admin/flats/:id
+// @access  Private (Admin only)
+export const updateFlat = async (req, res, next) => {
+  try {
+    const { flatNumber, wing, floor, ownerName, contactNumber, maintenanceBaseAmount, status } = req.body;
+
+    const flat = await Flat.findById(req.params.id);
+    if (!flat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Flat record not found.',
+      });
+    }
+
+    // If changing wing or flatNumber, ensure uniqueness
+    const newWing = wing ? wing.toUpperCase().trim() : flat.wing;
+    const newFlatNumber = flatNumber ? flatNumber.toUpperCase().trim() : flat.flatNumber;
+
+    if (newWing !== flat.wing || newFlatNumber !== flat.flatNumber) {
+      const conflict = await Flat.findOne({
+        wing: newWing,
+        flatNumber: newFlatNumber,
+        _id: { $ne: flat._id },
+      });
+      if (conflict) {
+        return res.status(400).json({
+          success: false,
+          message: `Flat ${newWing}-${newFlatNumber} already exists in the society.`,
+        });
+      }
+    }
+
+    flat.wing = newWing;
+    flat.flatNumber = newFlatNumber;
+    if (floor !== undefined && floor !== '') flat.floor = Number(floor);
+    if (ownerName !== undefined) flat.ownerName = ownerName.trim();
+    if (contactNumber !== undefined) flat.contactNumber = contactNumber.trim();
+    if (maintenanceBaseAmount !== undefined && maintenanceBaseAmount !== '') {
+      flat.maintenanceBaseAmount = Number(maintenanceBaseAmount);
+    }
+    if (status && ['occupied', 'vacant'].includes(status)) flat.status = status;
+
+    await flat.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Flat ${flat.wing}-${flat.flatNumber} updated successfully.`,
+      flat,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Register a new resident account and associate with a flat
 // @route   POST /api/admin/residents
 // @access  Private (Admin only)
@@ -145,3 +200,74 @@ export const getResidents = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Update an existing resident account
+// @route   PUT /api/admin/residents/:id
+// @access  Private (Admin only)
+export const updateResident = async (req, res, next) => {
+  try {
+    const { name, email, phone, flatId, status, password } = req.body;
+
+    const resident = await User.findById(req.params.id);
+    if (!resident || resident.role !== 'resident') {
+      return res.status(404).json({
+        success: false,
+        message: 'Resident account not found.',
+      });
+    }
+
+    // If email is changing, check uniqueness
+    if (email && email.toLowerCase().trim() !== resident.email) {
+      const existing = await User.findOne({
+        email: email.toLowerCase().trim(),
+        _id: { $ne: resident._id },
+      });
+      if (existing) {
+        return res.status(400).json({
+          success: false,
+          message: 'Another user is already registered with this email.',
+        });
+      }
+      resident.email = email.toLowerCase().trim();
+    }
+
+    // If changing flat association, validate flat exists
+    if (flatId) {
+      const flat = await Flat.findById(flatId);
+      if (!flat) {
+        return res.status(404).json({
+          success: false,
+          message: 'Selected flat record does not exist.',
+        });
+      }
+      resident.flat = flatId;
+    }
+
+    if (name) resident.name = name.trim();
+    if (phone !== undefined) resident.phone = phone.trim();
+    if (status && ['active', 'inactive'].includes(status)) resident.status = status;
+    if (password && password.trim().length >= 6) {
+      resident.password = password.trim();
+    }
+
+    await resident.save();
+    await resident.populate('flat');
+
+    return res.status(200).json({
+      success: true,
+      message: `Resident account for ${resident.name} updated successfully.`,
+      resident: {
+        _id: resident._id,
+        name: resident.name,
+        email: resident.email,
+        role: resident.role,
+        flat: resident.flat,
+        phone: resident.phone,
+        status: resident.status,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
+import { formatDateTime } from '../utils/dateFormatter';
 
 const ReceiptPage = () => {
   const { id } = useParams();
@@ -129,7 +130,7 @@ const ReceiptPage = () => {
           <div>
             <p style={{ color: '#6b7280', fontSize: '0.8rem', textTransform: 'uppercase' }}>Payment Date & Time</p>
             <p style={{ fontWeight: '500' }}>
-              {new Date(receipt.paidAt || receipt.createdAt).toLocaleString()}
+              {formatDateTime(receipt.paidAt || receipt.createdAt)}
             </p>
           </div>
 

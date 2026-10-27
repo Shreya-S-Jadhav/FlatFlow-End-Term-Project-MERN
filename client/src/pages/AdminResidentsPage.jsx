@@ -16,6 +16,16 @@ const AdminResidentsPage = () => {
   const [phone, setPhone] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Edit Resident state
+  const [editingResident, setEditingResident] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editFlatId, setEditFlatId] = useState('');
+  const [editStatus, setEditStatus] = useState('active');
+  const [editPassword, setEditPassword] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -38,6 +48,52 @@ const AdminResidentsPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleOpenEdit = (resident) => {
+    setEditingResident(resident);
+    setEditName(resident.name);
+    setEditEmail(resident.email);
+    setEditPhone(resident.phone || '');
+    setEditFlatId(resident.flat?._id || resident.flat || '');
+    setEditStatus(resident.status || 'active');
+    setEditPassword('');
+  };
+
+  const handleCloseEdit = () => {
+    setEditingResident(null);
+  };
+
+  const handleUpdateResident = async (e) => {
+    e.preventDefault();
+    if (!editingResident) return;
+    setError('');
+    setSuccess('');
+    setSavingEdit(true);
+
+    try {
+      const payload = {
+        name: editName,
+        email: editEmail,
+        phone: editPhone,
+        flatId: editFlatId,
+        status: editStatus,
+      };
+      if (editPassword && editPassword.trim()) {
+        payload.password = editPassword.trim();
+      }
+
+      await api.put(`/admin/residents/${editingResident._id}`, payload);
+
+      setSuccess(`Resident account for ${editName} updated successfully.`);
+      handleCloseEdit();
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update resident account.');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
 
   const handleCreateResident = async (e) => {
     e.preventDefault();
@@ -175,6 +231,7 @@ const AdminResidentsPage = () => {
                   <th style={{ padding: '0.5rem' }}>Assigned Flat</th>
                   <th style={{ padding: '0.5rem' }}>Phone</th>
                   <th style={{ padding: '0.5rem' }}>Account Status</th>
+                  <th style={{ padding: '0.5rem', textAlign: 'right' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -187,7 +244,26 @@ const AdminResidentsPage = () => {
                     </td>
                     <td style={{ padding: '0.5rem' }}>{r.phone || '—'}</td>
                     <td style={{ padding: '0.5rem' }}>
-                      <span className="badge badge-success">{r.status}</span>
+                      <span className={`badge ${r.status === 'active' ? 'badge-success' : 'badge-danger'}`}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleOpenEdit(r)}
+                        style={{
+                          padding: '0.3rem 0.65rem',
+                          background: '#f3f4f6',
+                          color: '#1f2937',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          fontWeight: '600',
+                        }}
+                      >
+                        ✏️ Edit
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -196,6 +272,138 @@ const AdminResidentsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Resident Modal */}
+      {editingResident && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              maxWidth: '520px',
+              width: '100%',
+              background: '#fff',
+              borderRadius: '8px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                Edit Resident ({editingResident.name})
+              </h2>
+              <button
+                onClick={handleCloseEdit}
+                style={{ background: 'transparent', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6b7280' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateResident} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Assigned Flat</label>
+                <select
+                  value={editFlatId}
+                  onChange={(e) => setEditFlatId(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                >
+                  <option value="">Unassigned</option>
+                  {flats.map((f) => (
+                    <option key={f._id} value={f._id}>
+                      Wing {f.wing} - Flat {f.flatNumber}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Contact Phone</label>
+                <input
+                  type="text"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  placeholder="Phone number"
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Account Status</label>
+                <select
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>
+                  Reset Password <span style={{ fontWeight: 'normal', color: '#6b7280' }}>(Optional)</span>
+                </label>
+                <input
+                  type="password"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  placeholder="Leave blank to keep current"
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={handleCloseEdit}
+                  style={{ padding: '0.5rem 1rem', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  style={{ padding: '0.5rem 1rem', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: '600', cursor: 'pointer' }}
+                >
+                  {savingEdit ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

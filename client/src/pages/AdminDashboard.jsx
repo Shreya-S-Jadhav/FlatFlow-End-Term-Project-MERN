@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { formatDate } from '../utils/dateFormatter';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -61,7 +62,7 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="dashboard-date">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          {formatDate(new Date())}
         </div>
       </div>
 
@@ -273,7 +274,7 @@ const AdminDashboard = () => {
                     <td><span className="badge badge-info">{p.flat}</span></td>
                     <td>{p.payer}</td>
                     <td style={{ fontWeight: '600', color: '#059669' }}>₹{p.amount.toLocaleString('en-IN')}</td>
-                    <td>{new Date(p.paidAt).toLocaleDateString('en-IN')}</td>
+                    <td>{formatDate(p.paidAt)}</td>
                     <td style={{ fontSize: '0.85rem', color: '#6b7280' }}>{p.method}</td>
                   </tr>
                 ))}

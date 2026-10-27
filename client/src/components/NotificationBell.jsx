@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { formatDateTime } from '../utils/dateFormatter';
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState([]);
@@ -128,7 +129,7 @@ const NotificationBell = () => {
                   <p style={{ fontWeight: '600', fontSize: '0.8rem', color: '#1f2937' }}>{n.title}</p>
                   <p style={{ fontSize: '0.75rem', color: '#4b5563', margin: '0.2rem 0' }}>{n.message}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#9ca3af' }}>
-                    <span>{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span>{formatDateTime(n.createdAt)}</span>
                     {n.link && (
                       <Link to={n.link} onClick={() => setOpen(false)} style={{ color: '#2563eb' }}>
                         View →

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { formatDate } from '../utils/dateFormatter';
 
 const AdminBillsPage = () => {
   const [bills, setBills] = useState([]);
@@ -11,6 +12,9 @@ const AdminBillsPage = () => {
   // Filters
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // Reminders State
+  const [sendingReminders, setSendingReminders] = useState(false);
 
   // Batch Generation State
   const [batchPeriod, setBatchPeriod] = useState('2026-11');
@@ -25,6 +29,7 @@ const AdminBillsPage = () => {
   const [adjustments, setAdjustments] = useState(0);
   const [adjustmentReason, setAdjustmentReason] = useState('');
   const [submittingSingle, setSubmittingSingle] = useState(false);
+
 
   const fetchData = async () => {
     try {
@@ -101,28 +106,64 @@ const AdminBillsPage = () => {
     }
   };
 
+  const handleSendReminders = async () => {
+    setError('');
+    setSuccess('');
+    setSendingReminders(true);
+    try {
+      const res = await api.post('/bills/admin/send-due-reminders', { force: true });
+      setSuccess(res.data.message || 'Due date reminder notifications dispatched successfully.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send due date reminder notifications.');
+    } finally {
+      setSendingReminders(false);
+    }
+  };
+
   return (
     <div className="container" style={{ marginTop: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
           Society Maintenance Billing
         </h1>
 
-        <button
-          onClick={() => setShowSingleModal(!showSingleModal)}
-          style={{
-            padding: '0.5rem 1rem',
-            background: showSingleModal ? '#4b5563' : '#2563eb',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            fontWeight: '600',
-            fontSize: '0.85rem',
-          }}
-        >
-          {showSingleModal ? 'Close Single Generator' : '+ Issue Individual Flat Bill'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={handleSendReminders}
+            disabled={sendingReminders}
+            style={{
+              padding: '0.5rem 1rem',
+              background: '#059669',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              fontWeight: '600',
+              fontSize: '0.85rem',
+              cursor: sendingReminders ? 'not-allowed' : 'pointer',
+              opacity: sendingReminders ? 0.7 : 1,
+            }}
+          >
+            {sendingReminders ? 'Sending...' : '🔔 Send Due Date Reminders'}
+          </button>
+
+          <button
+            onClick={() => setShowSingleModal(!showSingleModal)}
+            style={{
+              padding: '0.5rem 1rem',
+              background: showSingleModal ? '#4b5563' : '#2563eb',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              fontWeight: '600',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+            }}
+          >
+            {showSingleModal ? 'Close Single Generator' : '+ Issue Individual Flat Bill'}
+          </button>
+        </div>
       </div>
+
 
       {error && <div style={{ background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem' }}>{error}</div>}
       {success && <div style={{ background: '#d1fae5', color: '#065f46', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem' }}>{success}</div>}
@@ -319,7 +360,7 @@ const AdminBillsPage = () => {
                       {b.flat ? `Wing ${b.flat.wing}-${b.flat.flatNumber}` : '—'}
                     </td>
                     <td style={{ padding: '0.5rem' }}>{b.billingPeriodName}</td>
-                    <td style={{ padding: '0.5rem' }}>{new Date(b.dueDate).toLocaleDateString()}</td>
+                    <td style={{ padding: '0.5rem' }}>{formatDate(b.dueDate)}</td>
                     <td style={{ padding: '0.5rem', fontWeight: 'bold' }}>₹{b.totalAmount}</td>
                     <td style={{ padding: '0.5rem' }}>
                       <span

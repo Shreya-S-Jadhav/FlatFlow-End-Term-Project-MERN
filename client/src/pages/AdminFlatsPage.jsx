@@ -16,6 +16,17 @@ const AdminFlatsPage = () => {
   const [maintenanceBaseAmount, setMaintenanceBaseAmount] = useState(2500);
   const [submitting, setSubmitting] = useState(false);
 
+  // Edit Flat state
+  const [editingFlat, setEditingFlat] = useState(null);
+  const [editWing, setEditWing] = useState('');
+  const [editFlatNumber, setEditFlatNumber] = useState('');
+  const [editFloor, setEditFloor] = useState('');
+  const [editOwnerName, setEditOwnerName] = useState('');
+  const [editContactNumber, setEditContactNumber] = useState('');
+  const [editStatus, setEditStatus] = useState('occupied');
+  const [editMaintenanceBaseAmount, setEditMaintenanceBaseAmount] = useState(2500);
+  const [savingEdit, setSavingEdit] = useState(false);
+
   const fetchFlats = async () => {
     try {
       setLoading(true);
@@ -31,6 +42,49 @@ const AdminFlatsPage = () => {
   useEffect(() => {
     fetchFlats();
   }, []);
+
+  const handleOpenEdit = (flat) => {
+    setEditingFlat(flat);
+    setEditWing(flat.wing);
+    setEditFlatNumber(flat.flatNumber);
+    setEditFloor(flat.floor);
+    setEditOwnerName(flat.ownerName || '');
+    setEditContactNumber(flat.contactNumber || '');
+    setEditStatus(flat.status || 'occupied');
+    setEditMaintenanceBaseAmount(flat.maintenanceBaseAmount || 2500);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingFlat(null);
+  };
+
+  const handleUpdateFlat = async (e) => {
+    e.preventDefault();
+    if (!editingFlat) return;
+    setError('');
+    setSuccess('');
+    setSavingEdit(true);
+
+    try {
+      await api.put(`/admin/flats/${editingFlat._id}`, {
+        wing: editWing,
+        flatNumber: editFlatNumber,
+        floor: Number(editFloor),
+        ownerName: editOwnerName,
+        contactNumber: editContactNumber,
+        status: editStatus,
+        maintenanceBaseAmount: Number(editMaintenanceBaseAmount),
+      });
+
+      setSuccess(`Flat ${editWing}-${editFlatNumber} updated successfully.`);
+      handleCloseEdit();
+      fetchFlats();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update flat details.');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
 
   const handleCreateFlat = async (e) => {
     e.preventDefault();
@@ -176,6 +230,7 @@ const AdminFlatsPage = () => {
                   <th style={{ padding: '0.5rem' }}>Phone</th>
                   <th style={{ padding: '0.5rem' }}>Status</th>
                   <th style={{ padding: '0.5rem' }}>Base Maintenance</th>
+                  <th style={{ padding: '0.5rem', textAlign: 'right' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -188,9 +243,28 @@ const AdminFlatsPage = () => {
                     <td style={{ padding: '0.5rem' }}>{flat.ownerName || '—'}</td>
                     <td style={{ padding: '0.5rem' }}>{flat.contactNumber || '—'}</td>
                     <td style={{ padding: '0.5rem' }}>
-                      <span className="badge badge-success">{flat.status}</span>
+                      <span className={`badge ${flat.status === 'occupied' ? 'badge-success' : 'badge-warning'}`}>
+                        {flat.status}
+                      </span>
                     </td>
                     <td style={{ padding: '0.5rem' }}>₹{flat.maintenanceBaseAmount}</td>
+                    <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleOpenEdit(flat)}
+                        style={{
+                          padding: '0.3rem 0.65rem',
+                          background: '#f3f4f6',
+                          color: '#1f2937',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          fontWeight: '600',
+                        }}
+                      >
+                        ✏️ Edit
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -198,6 +272,142 @@ const AdminFlatsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Flat Modal */}
+      {editingFlat && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              maxWidth: '520px',
+              width: '100%',
+              background: '#fff',
+              borderRadius: '8px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                Edit Flat {editingFlat.wing}-{editingFlat.flatNumber}
+              </h2>
+              <button
+                onClick={handleCloseEdit}
+                style={{ background: 'transparent', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6b7280' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateFlat} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Wing</label>
+                <input
+                  type="text"
+                  required
+                  value={editWing}
+                  onChange={(e) => setEditWing(e.target.value.toUpperCase())}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Flat Number</label>
+                <input
+                  type="text"
+                  required
+                  value={editFlatNumber}
+                  onChange={(e) => setEditFlatNumber(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Floor</label>
+                <input
+                  type="number"
+                  required
+                  value={editFloor}
+                  onChange={(e) => setEditFloor(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Status</label>
+                <select
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                >
+                  <option value="occupied">Occupied</option>
+                  <option value="vacant">Vacant</option>
+                </select>
+              </div>
+
+              <div style={{ gridColumn: 'span 2' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Owner / Primary Contact</label>
+                <input
+                  type="text"
+                  value={editOwnerName}
+                  onChange={(e) => setEditOwnerName(e.target.value)}
+                  placeholder="Full name"
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Contact Phone</label>
+                <input
+                  type="text"
+                  value={editContactNumber}
+                  onChange={(e) => setEditContactNumber(e.target.value)}
+                  placeholder="Phone number"
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', marginBottom: '0.2rem' }}>Base Maintenance (₹)</label>
+                <input
+                  type="number"
+                  required
+                  value={editMaintenanceBaseAmount}
+                  onChange={(e) => setEditMaintenanceBaseAmount(e.target.value)}
+                  style={{ width: '100%', padding: '0.4rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={handleCloseEdit}
+                  style={{ padding: '0.5rem 1rem', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  style={{ padding: '0.5rem 1rem', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: '600', cursor: 'pointer' }}
+                >
+                  {savingEdit ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

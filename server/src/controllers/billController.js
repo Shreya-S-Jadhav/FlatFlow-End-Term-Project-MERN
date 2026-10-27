@@ -1,5 +1,7 @@
 import Bill from '../models/Bill.js';
 import Flat from '../models/Flat.js';
+import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 
 // Helper: Formats month string to readable name (e.g. "2026-10" -> "October 2026")
 const formatPeriodName = (periodStr) => {
@@ -264,3 +266,146 @@ export const getBillById = async (req, res, next) => {
     next(error);
   }
 };
+
+// Internal core logic for checking and dispatching due reminders
+export const runDailyDueDateReminderJob = async () => {
+  try {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    // Look for unpaid or overdue bills where dueDate <= endOfDay (due today or overdue)
+    const unpaidBills = await Bill.find({
+      status: { $in: ['unpaid', 'overdue'] },
+      dueDate: { $lte: endOfDay },
+    }).populate('flat');
+
+    let count = 0;
+
+    for (const bill of unpaidBills) {
+      if (!bill.flat) continue;
+
+      const residents = await User.find({
+        role: 'resident',
+        flat: bill.flat._id,
+        status: 'active',
+      });
+
+      for (const resident of residents) {
+        // Prevent duplicate notification on the same day for this bill
+        const alreadySent = await Notification.findOne({
+          recipient: resident._id,
+          type: 'due_reminder',
+          link: '/resident/bills',
+          createdAt: { $gte: startOfDay, $lte: endOfDay },
+        });
+
+        if (!alreadySent) {
+          const isTodayDue = bill.dueDate >= startOfDay && bill.dueDate <= endOfDay;
+          const dueText = isTodayDue
+            ? 'Today is the final day to pay your maintenance bill'
+            : 'Your maintenance bill payment is overdue / pending';
+
+          await Notification.create({
+            recipient: resident._id,
+            title: 'Payment Reminder: Bill Due Date',
+            message: `${dueText} of ₹${bill.totalAmount} for ${bill.billingPeriodName || bill.billingPeriod} (Bill #${bill.billNumber}). Please complete your payment to avoid overdue charges.`,
+            type: 'due_reminder',
+            link: '/resident/bills',
+          });
+          count++;
+        }
+      }
+    }
+
+    if (count > 0) {
+      console.log(`[Scheduler] Dispatched ${count} due date reminder notification(s) to residents.`);
+    }
+    return count;
+  } catch (error) {
+    console.error(`[Scheduler Error] Due reminder job failed: ${error.message}`);
+    return 0;
+  }
+};
+
+// @desc    Admin endpoint: Send payment reminder to all flats whose bill is unpaid on/by due date
+// @route   POST /api/bills/admin/send-due-reminders
+// @access  Private (Admin only)
+export const sendDueDateReminders = async (req, res, next) => {
+  try {
+    const { dueOnlyToday = false, force = false } = req.body || {};
+
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    const filter = {
+      status: { $in: ['unpaid', 'overdue'] },
+    };
+
+    if (dueOnlyToday) {
+      filter.dueDate = { $gte: startOfDay, $lte: endOfDay };
+    } else {
+      filter.dueDate = { $lte: endOfDay };
+    }
+
+    const unpaidBills = await Bill.find(filter).populate('flat');
+
+    let remindersSent = 0;
+    const notifiedFlats = new Set();
+
+    for (const bill of unpaidBills) {
+      if (!bill.flat) continue;
+
+      const residents = await User.find({
+        role: 'resident',
+        flat: bill.flat._id,
+        status: 'active',
+      });
+
+      for (const resident of residents) {
+        if (!force) {
+          // Check if reminder was already sent for this specific bill today
+          const alreadySent = await Notification.findOne({
+            recipient: resident._id,
+            type: 'due_reminder',
+            message: { $regex: bill.billNumber },
+            createdAt: { $gte: startOfDay, $lte: endOfDay },
+          });
+
+          if (alreadySent) continue;
+        }
+
+        const isTodayDue = bill.dueDate >= startOfDay && bill.dueDate <= endOfDay;
+        const dueText = isTodayDue
+          ? 'Today is the final day to pay your maintenance bill'
+          : 'Your maintenance bill payment is overdue / pending';
+
+        await Notification.create({
+          recipient: resident._id,
+          title: 'Payment Reminder: Bill Due Date',
+          message: `${dueText} of ₹${bill.totalAmount} for ${bill.billingPeriodName || bill.billingPeriod} (Bill #${bill.billNumber}). Please complete your payment to avoid overdue charges.`,
+          type: 'due_reminder',
+          link: '/resident/bills',
+        });
+
+        remindersSent++;
+        notifiedFlats.add(`${bill.flat.wing}-${bill.flat.flatNumber}`);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: remindersSent > 0
+        ? `Sent ${remindersSent} due reminder notification(s) across ${notifiedFlats.size} flat(s).`
+        : 'Eligible residents have already received reminders today or have no unpaid bills due.',
+      remindersSent,
+      flatsCount: notifiedFlats.size,
+      flats: Array.from(notifiedFlats),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

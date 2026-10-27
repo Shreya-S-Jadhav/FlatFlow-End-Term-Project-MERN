@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import PaymentModal from '../components/PaymentModal';
+import { formatDate } from '../utils/dateFormatter';
 
 const ResidentBillsPage = () => {
   const { user } = useAuth();
@@ -103,9 +104,9 @@ const ResidentBillsPage = () => {
                   Bill Reference: <strong>{bill.billNumber}</strong>
                 </p>
                 <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                  Issue Date: {new Date(bill.issueDate).toLocaleDateString()} | Due Date:{' '}
+                  Issue Date: {formatDate(bill.issueDate)} | Due Date:{' '}
                   <span style={{ color: bill.status === 'overdue' ? '#dc2626' : 'inherit', fontWeight: bill.status === 'overdue' ? '600' : 'normal' }}>
-                    {new Date(bill.dueDate).toLocaleDateString()}
+                    {formatDate(bill.dueDate)}
                   </span>
                 </p>
                 {bill.adjustments !== 0 && (
@@ -115,7 +116,7 @@ const ResidentBillsPage = () => {
                 )}
                 {bill.paidAt && (
                   <p style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.25rem' }}>
-                    Paid on {new Date(bill.paidAt).toLocaleDateString()}
+                    Paid on {formatDate(bill.paidAt)}
                   </p>
                 )}
               </div>

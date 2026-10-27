@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { formatDate } from '../utils/dateFormatter';
 
 const ResidentDisputesPage = () => {
   const { user } = useAuth();
@@ -273,7 +274,7 @@ const ResidentDisputesPage = () => {
                   <span>
                     Bill: <strong>{d.bill?.billNumber}</strong> ({d.bill?.billingPeriodName})
                   </span>
-                  <span>Filed on: {new Date(d.createdAt).toLocaleDateString()}</span>
+                  <span>Filed on: {formatDate(d.createdAt)}</span>
                   {d.supportingDocument?.filename && (
                     <a
                       href={`http://localhost:5000/api/disputes/document/${d._id}`}
@@ -293,7 +294,7 @@ const ResidentDisputesPage = () => {
                     <p style={{ fontSize: '0.85rem', color: '#334155', marginTop: '0.2rem' }}>{d.adminResponse}</p>
                     {d.resolvedAt && (
                       <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>
-                        Updated on {new Date(d.resolvedAt).toLocaleDateString()}
+                        Updated on {formatDate(d.resolvedAt)}
                       </p>
                     )}
                   </div>

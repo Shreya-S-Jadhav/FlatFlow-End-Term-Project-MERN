@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { formatDateTime } from '../utils/dateFormatter';
 
 const PaymentHistoryPage = () => {
   const { user } = useAuth();
@@ -69,7 +70,7 @@ const PaymentHistoryPage = () => {
                     <td style={{ padding: '0.6rem', fontWeight: 'bold', color: '#059669' }}>₹{p.amount}</td>
                     <td style={{ padding: '0.6rem' }}>{p.paymentMethod}</td>
                     <td style={{ padding: '0.6rem' }}>
-                      {new Date(p.paidAt || p.createdAt).toLocaleDateString()}
+                      {formatDateTime(p.paidAt || p.createdAt)}
                     </td>
                     <td style={{ padding: '0.6rem', textAlign: 'right' }}>
                       <Link

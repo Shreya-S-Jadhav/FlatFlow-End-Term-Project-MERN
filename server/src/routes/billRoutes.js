@@ -5,6 +5,7 @@ import {
   getAdminBills,
   getMyBills,
   getBillById,
+  sendDueDateReminders,
 } from '../controllers/billController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
@@ -20,8 +21,10 @@ router.get('/my-bills', getMyBills);
 router.get('/admin/all', adminOnly, getAdminBills);
 router.post('/admin/generate-single', adminOnly, generateSingleBill);
 router.post('/admin/generate-batch', adminOnly, generateBatchBills);
+router.post('/admin/send-due-reminders', adminOnly, sendDueDateReminders);
 
 // Single bill view (enforces ownership guard in controller)
 router.get('/:id', getBillById);
 
 export default router;
+
