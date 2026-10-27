@@ -8,20 +8,24 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database and start listening
-const startServer = async () => {
-  await connectDB();
+// Connect to Database and start listening in standalone Node.js mode
+if (!process.env.VERCEL) {
+  const startServer = async () => {
+    await connectDB();
 
-  // Run automated due date reminder check on startup and schedule periodic check
-  runDailyDueDateReminderJob().catch((err) => console.error('[Reminder Job Error]', err));
-  // Check every 6 hours
-  setInterval(runDailyDueDateReminderJob, 1000 * 60 * 60 * 6);
+    // Run automated due date reminder check on startup and schedule periodic check
+    runDailyDueDateReminderJob().catch((err) => console.error('[Reminder Job Error]', err));
+    // Check every 6 hours
+    setInterval(runDailyDueDateReminderJob, 1000 * 60 * 60 * 6);
 
-  app.listen(PORT, () => {
-    console.log(`[Server] FlatFlow backend running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${PORT}`);
-    console.log(`[Server] Health check endpoint: http://localhost:${PORT}/api/health`);
-  });
-};
+    app.listen(PORT, () => {
+      console.log(`[Server] FlatFlow backend running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${PORT}`);
+      console.log(`[Server] Health check endpoint: http://localhost:${PORT}/api/health`);
+    });
+  };
 
-startServer();
+  startServer();
+}
+
+export default app;
 

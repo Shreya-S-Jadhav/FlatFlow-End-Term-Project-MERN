@@ -277,7 +277,7 @@ const ResidentDisputesPage = () => {
                   <span>Filed on: {formatDate(d.createdAt)}</span>
                   {d.supportingDocument?.filename && (
                     <a
-                      href={`http://localhost:5000/api/disputes/document/${d._id}`}
+                      href={`/api/disputes/document/${d._id}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{ color: '#2563eb', fontWeight: '500' }}

@@ -15,6 +15,8 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import { connectDB } from './config/db.js';
+
 const app = express();
 
 // Allowed origins for development and deployment
@@ -30,8 +32,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin, configured allowed origins, or any localhost port in development
-      if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
+      // Allow requests with no origin, configured allowed origins, localhost, or any vercel.app deployment
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        /^http:\/\/localhost:\d+$/.test(origin) ||
+        /\.vercel\.app$/.test(origin) ||
+        process.env.VERCEL
+      ) {
         return callback(null, true);
       }
       return callback(new Error('Blocked by CORS policy'));
@@ -43,6 +51,18 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Ensure MongoDB is connected for serverless environments
+app.use(async (req, res, next) => {
+  if (process.env.MONGODB_URI) {
+    try {
+      await connectDB();
+    } catch (e) {
+      // Caught inside connectDB
+    }
+  }
+  next();
+});
 
 // Base Health Check Route
 app.get('/api/health', (req, res) => {

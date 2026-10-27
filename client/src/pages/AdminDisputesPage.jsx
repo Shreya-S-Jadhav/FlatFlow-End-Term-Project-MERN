@@ -157,7 +157,7 @@ const AdminDisputesPage = () => {
               {selectedDispute.supportingDocument?.filename && (
                 <p style={{ marginTop: '0.5rem' }}>
                   <a
-                    href={`http://localhost:5000/api/disputes/document/${selectedDispute._id}`}
+                    href={`/api/disputes/document/${selectedDispute._id}`}
                     target="_blank"
                     rel="noreferrer"
                     style={{ color: '#2563eb', fontWeight: '600' }}
