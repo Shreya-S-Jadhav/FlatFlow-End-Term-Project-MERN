@@ -24,6 +24,7 @@ const Navbar = () => {
                   <Link to="/admin">Admin Overview</Link>
                   <Link to="/admin/flats">Manage Flats</Link>
                   <Link to="/admin/residents">Residents</Link>
+                  <Link to="/admin/bills">Society Bills</Link>
                 </>
               ) : (
                 <>

@@ -4,9 +4,11 @@ import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import ResidentDashboard from './pages/ResidentDashboard';
+import ResidentBillsPage from './pages/ResidentBillsPage';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminFlatsPage from './pages/AdminFlatsPage';
 import AdminResidentsPage from './pages/AdminResidentsPage';
+import AdminBillsPage from './pages/AdminBillsPage';
 
 // Root index redirector
 const RootRedirect = () => {
@@ -31,6 +33,7 @@ function App() {
               {/* Resident Only Protected Routes */}
               <Route element={<ProtectedRoute allowedRoles={['resident']} />}>
                 <Route path="/dashboard" element={<ResidentDashboard />} />
+                <Route path="/my-bills" element={<ResidentBillsPage />} />
               </Route>
 
               {/* Admin Only Protected Routes */}
@@ -38,6 +41,7 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/flats" element={<AdminFlatsPage />} />
                 <Route path="/admin/residents" element={<AdminResidentsPage />} />
+                <Route path="/admin/bills" element={<AdminBillsPage />} />
               </Route>
 
               {/* Catch-all 404 */}

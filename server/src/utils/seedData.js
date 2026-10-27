@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
 import Flat from '../models/Flat.js';
+import Bill from '../models/Bill.js';
 import { connectDB } from '../config/db.js';
 
 dotenv.config();
@@ -10,7 +11,8 @@ const seedDatabase = async () => {
   try {
     await connectDB();
 
-    console.log('[Seeder] Cleaning existing test users and flats...');
+    console.log('[Seeder] Cleaning existing test users, flats, and bills...');
+    await Bill.deleteMany();
     await User.deleteMany();
     await Flat.deleteMany();
 
@@ -89,6 +91,59 @@ const seedDatabase = async () => {
       phone: '9876543212',
       status: 'active',
     });
+
+    console.log('[Seeder] Creating sample maintenance bills...');
+
+    // Bill 1: Current month (October 2026) for Flat A-101 -> Unpaid
+    const currentDueDate = new Date('2026-11-10');
+    await Bill.create({
+      billNumber: 'BILL-202610-A101',
+      flat: flats[0]._id,
+      billingPeriod: '2026-10',
+      billingPeriodName: 'October 2026',
+      issueDate: new Date('2026-10-01'),
+      dueDate: currentDueDate,
+      baseAmount: 2500,
+      adjustments: 0,
+      totalAmount: 2500,
+      status: 'unpaid',
+      notes: 'Monthly Society Maintenance - Lift & Generator share included',
+    });
+
+    // Bill 2: Previous month (September 2026) for Flat A-101 -> Overdue
+    const overdueDueDate = new Date('2026-10-10');
+    await Bill.create({
+      billNumber: 'BILL-202609-A101',
+      flat: flats[0]._id,
+      billingPeriod: '2026-09',
+      billingPeriodName: 'September 2026',
+      issueDate: new Date('2026-09-01'),
+      dueDate: overdueDueDate,
+      baseAmount: 2500,
+      adjustments: 150,
+      adjustmentReason: 'Clubhouse maintenance charge',
+      totalAmount: 2650,
+      status: 'overdue',
+      notes: 'Overdue maintenance bill',
+    });
+
+    // Bill 3: Current month for Flat B-201 -> Paid
+    await Bill.create({
+      billNumber: 'BILL-202610-B201',
+      flat: flats[2]._id,
+      billingPeriod: '2026-10',
+      billingPeriodName: 'October 2026',
+      issueDate: new Date('2026-10-01'),
+      dueDate: currentDueDate,
+      baseAmount: 3000,
+      adjustments: 0,
+      totalAmount: 3000,
+      status: 'paid',
+      paidAt: new Date('2026-10-05'),
+      notes: 'Monthly Society Maintenance',
+    });
+
+    console.log('[Seeder] Seeded 3 sample maintenance bills (Unpaid, Overdue, Paid).');
 
     console.log('[Seeder] Database successfully seeded with:');
     console.log('--------------------------------------------------');

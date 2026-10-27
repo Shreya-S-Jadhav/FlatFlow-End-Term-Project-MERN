@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import billRoutes from './routes/billRoutes.js';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.get('/api/health', (req, res) => {
 // Mount Feature API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/bills', billRoutes);
 
 // Error Handling Middleware
 app.use(notFoundHandler);

@@ -13,8 +13,8 @@
 |---|---|---|
 | **Phase 1** | Project Scaffolding & Foundation | **Completed** |
 | **Phase 2** | Authentication & Role-Based Authorization | **Completed** |
-| **Phase 3** | Flat Management & Maintenance Billing | **In Progress** |
-| **Phase 4** | Payment Gateway Integration (Razorpay Test Mode) & Receipts | Planned |
+| **Phase 3** | Flat Management & Maintenance Billing | **Completed** |
+| **Phase 4** | Payment Gateway Integration (Razorpay Test Mode) & Receipts | **In Progress** |
 | **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | Planned |
 | **Phase 6** | Society Financial Analytics & Deployment Prep | Planned |
 
@@ -33,9 +33,10 @@
 | JWT Authentication in HttpOnly Cookie | Security | **Completed** | `protect` & `adminOnly` middleware, secure cookie, session restore |
 | Resident & Flat Management | Auth & Admin | **Completed** | Admin can create flats and assign resident accounts |
 | Protected React Routes & AuthContext | Frontend Auth | **Completed** | Role-based route guards (`/admin/*`, `/dashboard`) |
-| Bill Generation & Uniqueness Guard | Billing | **In Progress** | Prevent duplicate periods per flat |
-| Resident My-Bills & Search/Filters | Billing | Planned | Status: Unpaid, Overdue, Paid |
-| Razorpay Test Mode Order & Verification | Payments | Planned | Server-side signature validation |
+| Bill Generation & Uniqueness Guard | Billing | **Completed** | Compound index `{ flat: 1, billingPeriod: 1 }` prevents duplicates |
+| Bulk Monthly Bill Generation | Billing | **Completed** | 1-click batch generation with safe skip of existing bills |
+| Resident My-Bills & Search/Filters | Billing | **Completed** | Filter tabs (Unpaid, Overdue, Paid), strict flat data isolation |
+| Razorpay Test Mode Order & Verification | Payments | **In Progress** | Server-side signature validation |
 | Payment Receipts & History | Payments | Planned | Tamper-proof verified payment records |
 | Dispute Lifecycle & Document Evidence | Disputes | Planned | Open -> Under Review -> Resolved |
 | In-App Notifications | Notifications | Planned | Due-date and bill alerts |
@@ -53,3 +54,4 @@
 | 2 | `feat: scaffold Express backend with modular architecture and health check` | Setup Express server, ES modules, error handlers, and config |
 | 3 | `feat: scaffold React frontend with Vite, Axios client, and health check integration` | Setup React + Vite, Axios with credentials, basic responsive layout |
 | 4 | `feat: implement authentication, role-based authorization, flat and resident management` | User/Flat models, JWT HttpOnly cookies, auth middleware, AuthContext, ProtectedRoute |
+| 5 | `feat: implement maintenance billing module with batch generation, filters, and resident views` | Bill schema, unique period guard, batch/single bill generation, status filters |
