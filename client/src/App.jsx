@@ -11,6 +11,8 @@ import AdminResidentsPage from './pages/AdminResidentsPage';
 import AdminBillsPage from './pages/AdminBillsPage';
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import ReceiptPage from './pages/ReceiptPage';
+import ResidentDisputesPage from './pages/ResidentDisputesPage';
+import AdminDisputesPage from './pages/AdminDisputesPage';
 
 // Root index redirector
 const RootRedirect = () => {
@@ -37,6 +39,7 @@ function App() {
                 <Route path="/dashboard" element={<ResidentDashboard />} />
                 <Route path="/my-bills" element={<ResidentBillsPage />} />
                 <Route path="/payment-history" element={<PaymentHistoryPage />} />
+                <Route path="/disputes" element={<ResidentDisputesPage />} />
               </Route>
 
               {/* Authenticated Routes (Admin or Resident of that flat) */}
@@ -50,6 +53,7 @@ function App() {
                 <Route path="/admin/flats" element={<AdminFlatsPage />} />
                 <Route path="/admin/residents" element={<AdminResidentsPage />} />
                 <Route path="/admin/bills" element={<AdminBillsPage />} />
+                <Route path="/admin/disputes" element={<AdminDisputesPage />} />
               </Route>
 
               {/* Catch-all 404 */}

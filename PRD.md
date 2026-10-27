@@ -15,8 +15,8 @@
 | **Phase 2** | Authentication & Role-Based Authorization | **Completed** |
 | **Phase 3** | Flat Management & Maintenance Billing | **Completed** |
 | **Phase 4** | Payment Gateway Integration & Receipts | **Completed** |
-| **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | **In Progress** |
-| **Phase 6** | Society Financial Analytics & Deployment Prep | Planned |
+| **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | **Completed** |
+| **Phase 6** | Society Financial Analytics & Deployment Prep | **In Progress** |
 
 ---
 
@@ -38,9 +38,9 @@
 | Resident My-Bills & Search/Filters | Billing | **Completed** | Filter tabs (Unpaid, Overdue, Paid), strict flat data isolation |
 | Payment Gateway Order & Server Verification | Payments | **Completed** | Trusted server amount lookup, HMAC SHA256 validation |
 | Payment History & Printable Receipts | Payments | **Completed** | Printable official receipt (`/receipt/:id`) with verified audit stamp |
-| Dispute Lifecycle & Document Evidence | Disputes | **In Progress** | Open -> Under Review -> Resolved |
-| In-App Notifications | Notifications | Planned | Due-date and bill alerts |
-| Admin Dashboard Analytics | Reporting | Planned | Verified collections vs pending vs overdue |
+| Dispute Lifecycle & Document Evidence | Disputes | **Completed** | Open -> Under Review -> Resolved, private evidence upload |
+| In-App Notifications | Notifications | **Completed** | Real-time unread bell badge, alerts on disputes & payments |
+| Admin Dashboard Analytics | Reporting | **In Progress** | Verified collections vs pending vs overdue |
 
 *States: Planned | In Progress | Implemented | Tested | Deployed*
 
@@ -56,3 +56,4 @@
 | 4 | `feat: implement authentication, role-based authorization, flat and resident management` | User/Flat models, JWT HttpOnly cookies, auth middleware, AuthContext, ProtectedRoute |
 | 5 | `feat: implement maintenance billing module with batch generation, filters, and resident views` | Bill schema, unique period guard, batch/single bill generation, status filters |
 | 6 | `feat: implement payment processing, server-side verification, payment history, and printable receipts` | Payment schema, order creation, HMAC signature verification, PaymentModal, receipt page |
+| 7 | `feat: implement billing disputes, private evidence uploads, and in-app notifications` | Dispute lifecycle, Multer private document streaming, Notification bell & alert tracking |

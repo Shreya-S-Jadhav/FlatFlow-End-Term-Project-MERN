@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -21,16 +22,18 @@ const Navbar = () => {
             <div style={{ display: 'flex', gap: '1rem', fontSize: '0.95rem' }}>
               {isAdmin ? (
                 <>
-                  <Link to="/admin">Admin Overview</Link>
-                  <Link to="/admin/flats">Manage Flats</Link>
+                  <Link to="/admin">Overview</Link>
+                  <Link to="/admin/flats">Flats</Link>
                   <Link to="/admin/residents">Residents</Link>
-                  <Link to="/admin/bills">Society Bills</Link>
+                  <Link to="/admin/bills">Bills</Link>
+                  <Link to="/admin/disputes">Disputes</Link>
                 </>
               ) : (
                 <>
                   <Link to="/dashboard">My Flat</Link>
-                  <Link to="/my-bills">Maintenance Bills</Link>
-                  <Link to="/payment-history">Payment History</Link>
+                  <Link to="/my-bills">Bills</Link>
+                  <Link to="/payment-history">History</Link>
+                  <Link to="/disputes">Disputes</Link>
                 </>
               )}
             </div>
@@ -40,6 +43,7 @@ const Navbar = () => {
         <div>
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <NotificationBell />
               <span style={{ fontSize: '0.9rem', color: '#374151' }}>
                 <strong>{user.name}</strong>{' '}
                 <span className={`badge ${isAdmin ? 'badge-warning' : 'badge-success'}`}>
