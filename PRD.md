@@ -11,8 +11,8 @@
 
 | Phase | Description | Status |
 |---|---|---|
-| **Phase 1** | Project Scaffolding & Foundation | **In Progress** |
-| **Phase 2** | Authentication & Role-Based Authorization | Planned |
+| **Phase 1** | Project Scaffolding & Foundation | **Completed** |
+| **Phase 2** | Authentication & Role-Based Authorization | **In Progress** |
 | **Phase 3** | Flat Management & Maintenance Billing | Planned |
 | **Phase 4** | Payment Gateway Integration (Razorpay Test Mode) & Receipts | Planned |
 | **Phase 5** | Billing Disputes, Private Uploads & In-App Notifications | Planned |
@@ -26,10 +26,10 @@
 |---|---|---|---|
 | Environment Verification | Foundation | **Completed** | Node v24.12.0, npm 11.6.2, Git 2.51.0 confirmed |
 | Git Setup & Safe `.gitignore` | Foundation | **Completed** | Repository connected to GitHub (`main`) |
-| Backend Scaffolding (`server/`) | Foundation | **Implemented** | Express, CORS, cookie-parser, error middleware, health route |
-| Frontend Scaffolding (`client/`) | Foundation | Planned | React + Vite, react-router-dom |
-| MongoDB Atlas / Local Connection | Database | **In Progress** | Mongoose client configured with timeout guard |
-| User & Flat Data Models | Auth & Data | Planned | Role enforcement: `resident` and `admin` |
+| Backend Scaffolding (`server/`) | Foundation | **Completed** | Express, CORS, cookie-parser, error middleware, health route |
+| Frontend Scaffolding (`client/`) | Foundation | **Completed** | React + Vite, react-router-dom, Axios with credentials |
+| MongoDB Atlas Connection | Database | **Completed** | Live connection verified with Atlas cluster |
+| User & Flat Data Models | Auth & Data | **In Progress** | Role enforcement: `resident` and `admin` |
 | JWT Authentication in HttpOnly Cookie | Security | Planned | Login, logout, session check |
 | Bill Generation & Uniqueness Guard | Billing | Planned | Prevent duplicate periods per flat |
 | Resident My-Bills & Search/Filters | Billing | Planned | Status: Unpaid, Overdue, Paid |
@@ -49,3 +49,4 @@
 |---|---|---|
 | 1 | `chore: initial project repository and PRD setup` | Initialized git, added strict `.gitignore`, created living PRD |
 | 2 | `feat: scaffold Express backend with modular architecture and health check` | Setup Express server, ES modules, error handlers, and config |
+| 3 | `feat: scaffold React frontend with Vite, Axios client, and health check integration` | Setup React + Vite, Axios with credentials, basic responsive layout |
